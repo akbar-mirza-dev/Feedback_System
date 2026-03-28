@@ -2,16 +2,18 @@ const FEEDBACK_KEY = "feedback";
 
 // Get all feedback
 export const getFeedback = () => {
-  return JSON.parse(localStorage.getItem(FEEDBACK_KEY)) || [];
+  const data = localStorage.getItem(FEEDBACK_KEY);
+  return data ? JSON.parse(data) : [];
 };
 
 // Save feedback
 export const saveFeedback = (feedback) => {
   const existing = getFeedback();
   existing.push(feedback);
+
   localStorage.setItem(FEEDBACK_KEY, JSON.stringify(existing));
 
-  // 🔥 Trigger update event
+  // 🔥 Notify update (same tab)
   window.dispatchEvent(new Event("feedbackUpdated"));
 };
 
