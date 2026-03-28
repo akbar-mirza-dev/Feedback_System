@@ -15,19 +15,16 @@ function FeedbackForm() {
   const [comment, setComment] = useState("");
 
   const handleSubmit = () => {
-    // ✅ Validation
     if (!subject || !rating) {
       alert("Please select subject and rating");
       return;
     }
 
-    // 🚫 Duplicate Check
     if (isDuplicate(user.hallticket, subject)) {
-      alert("You have already submitted feedback for this subject");
+      alert("You already submitted feedback for this subject");
       return;
     }
 
-    // 📦 Create Feedback Object
     const feedback = {
       studentId: user.hallticket,
       subject,
@@ -37,13 +34,11 @@ function FeedbackForm() {
       date: new Date().toISOString(),
     };
 
-    // 💾 Save Feedback (also triggers admin update)
     saveFeedback(feedback);
 
-    // ✅ Success
     alert("Feedback submitted successfully!");
 
-    // 🔄 Reset Form
+    // Reset form
     setSubject("");
     setTeacher("");
     setRating("");
@@ -60,7 +55,6 @@ function FeedbackForm() {
             Submit Feedback
           </h2>
 
-          {/* Subject */}
           <select
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
@@ -74,7 +68,6 @@ function FeedbackForm() {
             ))}
           </select>
 
-          {/* Teacher */}
           <input
             type="text"
             placeholder="Teacher Name"
@@ -83,21 +76,19 @@ function FeedbackForm() {
             className="w-full mb-3 p-2 border rounded-lg"
           />
 
-          {/* Rating */}
           <select
             value={rating}
             onChange={(e) => setRating(e.target.value)}
             className="w-full mb-3 p-2 border rounded-lg"
           >
             <option value="">Select Rating</option>
-            <option value="1">1 - Poor</option>
-            <option value="2">2 - Average</option>
-            <option value="3">3 - Good</option>
-            <option value="4">4 - Very Good</option>
-            <option value="5">5 - Excellent</option>
+            {[1, 2, 3, 4, 5].map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
           </select>
 
-          {/* Comment */}
           <textarea
             placeholder="Comments (optional)"
             value={comment}
@@ -105,7 +96,6 @@ function FeedbackForm() {
             className="w-full mb-4 p-2 border rounded-lg"
           />
 
-          {/* Submit */}
           <button
             onClick={handleSubmit}
             className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
