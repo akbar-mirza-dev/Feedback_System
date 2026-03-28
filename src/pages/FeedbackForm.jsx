@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import { SUBJECTS } from "../utils/constants";
+import { saveFeedback, isDuplicate } from "../services/feedbackService";
 
 function FeedbackForm() {
   const user = JSON.parse(localStorage.getItem("currentUser"));
@@ -11,44 +12,35 @@ function FeedbackForm() {
   const [comment, setComment] = useState("");
 
   const handleSubmit = () => {
-    if (!subject || !rating) {
-      alert("Required fields missing");
-      return;
-    }
+  if (!subject || !rating) {
+    alert("Required fields missing");
+    return;
+  }
 
-    const existing =
-      JSON.parse(localStorage.getItem("feedback")) || [];
+  // 🚫 Duplicate check
+  if (isDuplicate(user.hallticket, subject)) {
+    alert("You already submitted feedback for this subject");
+    return;
+  }
 
-    const already = existing.find(
-      (f) =>
-        f.studentId === user.hallticket &&
-        f.subject === subject
-    );
-
-    if (already) {
-      alert("Already submitted for this subject");
-      return;
-    }
-
-    const feedback = {
-      studentId: user.hallticket,
-      subject,
-      teacher,
-      rating: Number(rating),
-      comment,
-      date: new Date().toISOString(),
-    };
-
-    existing.push(feedback);
-    localStorage.setItem("feedback", JSON.stringify(existing));
-
-    alert("Submitted!");
-
-    setSubject("");
-    setTeacher("");
-    setRating("");
-    setComment("");
+  const feedback = {
+    studentId: user.hallticket,
+    subject,
+    teacher,
+    rating: Number(rating),
+    comment,
+    date: new Date().toISOString(),
   };
+
+  saveFeedback(feedback);
+
+  alert("Feedback submitted successfully!");
+
+  setSubject("");
+  setTeacher("");
+  setRating("");
+  setComment("");
+};
 
   return (
     <>
