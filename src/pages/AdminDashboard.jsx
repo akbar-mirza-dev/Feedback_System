@@ -1,34 +1,38 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { getFeedback } from "../services/feedbackService";
+
 function AdminDashboard() {
   const [data, setData] = useState([]);
-useEffect(() => {
+
+  // Load data
   const loadData = () => {
-    const data = getFeedback();
-    setData(data);
+    const feedback = getFeedback();
+    setData(feedback);
   };
 
-  loadData();
-
-  // 🔥 Auto refresh every 1 sec (important for demo)
-  const interval = setInterval(loadData, 1000);
-
-  return () => clearInterval(interval);
-}, []);
-  
   useEffect(() => {
-    const d = JSON.parse(localStorage.getItem("feedback")) || [];
-    setData(d);
+    loadData();
+
+    // 🔥 Listen for updates
+    const handleUpdate = () => {
+      loadData();
+    };
+
+    window.addEventListener("feedbackUpdated", handleUpdate);
+
+    return () => {
+      window.removeEventListener("feedbackUpdated", handleUpdate);
+    };
   }, []);
 
   const avg =
     data.length > 0
       ? (
-          data.reduce((a, b) => a + b.rating, 0) / data.length
+          data.reduce((sum, f) => sum + f.rating, 0) /
+          data.length
         ).toFixed(2)
       : 0;
-  
 
   return (
     <>
@@ -43,7 +47,7 @@ useEffect(() => {
         {data.length === 0 ? (
           <p>No feedback available</p>
         ) : (
-          <table className="w-full border">
+          <table className="w-full border text-center">
             <thead className="bg-gray-200">
               <tr>
                 <th>Student</th>
@@ -56,7 +60,7 @@ useEffect(() => {
 
             <tbody>
               {data.map((f, i) => (
-                <tr key={i} className="border-t text-center">
+                <tr key={i} className="border-t">
                   <td>{f.studentId}</td>
                   <td>{f.subject}</td>
                   <td>{f.teacher}</td>
