@@ -5,18 +5,21 @@ export const getFeedback = () => {
   return JSON.parse(localStorage.getItem(FEEDBACK_KEY)) || [];
 };
 
-// Save new feedback
-export const saveFeedback = (newFeedback) => {
+// Save feedback
+export const saveFeedback = (feedback) => {
   const existing = getFeedback();
-  existing.push(newFeedback);
+  existing.push(feedback);
   localStorage.setItem(FEEDBACK_KEY, JSON.stringify(existing));
+
+  // 🔥 Trigger update event
+  window.dispatchEvent(new Event("feedbackUpdated"));
 };
 
 // Check duplicate
 export const isDuplicate = (studentId, subject) => {
   const existing = getFeedback();
 
-  return existing.find(
+  return existing.some(
     (f) => f.studentId === studentId && f.subject === subject
   );
 };
