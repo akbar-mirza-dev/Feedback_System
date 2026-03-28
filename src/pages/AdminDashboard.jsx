@@ -1,9 +1,22 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-
+import { getFeedback } from "../services/feedbackService";
 function AdminDashboard() {
   const [data, setData] = useState([]);
+useEffect(() => {
+  const loadData = () => {
+    const data = getFeedback();
+    setData(data);
+  };
 
+  loadData();
+
+  // 🔥 Auto refresh every 1 sec (important for demo)
+  const interval = setInterval(loadData, 1000);
+
+  return () => clearInterval(interval);
+}, []);
+  
   useEffect(() => {
     const d = JSON.parse(localStorage.getItem("feedback")) || [];
     setData(d);
@@ -15,6 +28,7 @@ function AdminDashboard() {
           data.reduce((a, b) => a + b.rating, 0) / data.length
         ).toFixed(2)
       : 0;
+  
 
   return (
     <>
