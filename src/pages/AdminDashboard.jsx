@@ -5,24 +5,30 @@ import { getFeedback } from "../services/feedbackService";
 function AdminDashboard() {
   const [data, setData] = useState([]);
 
-  // Load data
   const loadData = () => {
     const feedback = getFeedback();
     setData(feedback);
   };
 
   useEffect(() => {
+    // 🔥 Always load fresh data on page load
     loadData();
 
-    // 🔥 Listen for updates
+    // 🔥 Listen for updates (same tab)
     const handleUpdate = () => {
       loadData();
     };
 
     window.addEventListener("feedbackUpdated", handleUpdate);
 
+    // 🔥 CRITICAL FIX: reload when component re-renders
+    const interval = setInterval(() => {
+      loadData();
+    }, 500); // fast refresh
+
     return () => {
       window.removeEventListener("feedbackUpdated", handleUpdate);
+      clearInterval(interval);
     };
   }, []);
 
@@ -37,6 +43,7 @@ function AdminDashboard() {
   return (
     <>
       <Navbar />
+
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-4">
           Admin Dashboard
