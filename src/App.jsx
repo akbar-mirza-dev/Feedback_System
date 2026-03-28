@@ -1,33 +1,49 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./pages/Login";
+import StudentDashboard from "./pages/StudentDashboard";
+import FeedbackForm from "./pages/FeedbackForm";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminProtected from "./components/AdminProtected";
 
-import { useEffect, useState } from "react"
-import Footer from "./components/Footer";
-import Header from "./components/Header";
-import Home from "./pages/Home";
-import HeartLoader from "./components/HeartLoader";
-
-export default function App() {
-
-  const [loading,setLoading] = useState(true)
-
-useEffect(()=>{
-
-setTimeout(()=>{
-setLoading(false)
-},2500)
-
-},[])
-
-if(loading){
-return <HeartLoader/>
-}
-
-
+function App() {
   return (
-    <>
-    <Header />
-     <Home />
-    <Footer />
-    </>
-    
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+
+        <Route
+          path="/student"
+          element={
+            <ProtectedRoute>
+              <StudentDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/feedback"
+          element={
+            <ProtectedRoute>
+              <FeedbackForm />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/admin" element={<AdminLogin />} />
+
+        <Route
+          path="/admin/dashboard"
+          element={
+            <AdminProtected>
+              <AdminDashboard />
+            </AdminProtected>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
+
+export default App;
